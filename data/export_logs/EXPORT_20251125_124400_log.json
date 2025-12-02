@@ -1,0 +1,35 @@
+{
+  "timestamp": "2025-11-25T12:44:00.209012",
+  "export_id": "EXPORT_20251125_124400",
+  "exported_data": {
+    "export_id": "EXPORT_20251125_124400",
+    "timestamp": "2025-11-25T12:44:00.197475",
+    "source_document": "./data/inbox_attachments\\20251125_124120_all_details_text.pdf",
+    "validation_status": "complete",
+    "plan_data": {
+      "name": "Vishwajeet",
+      "address": "Delhi",
+      "phone_number": "9182823445"
+    },
+    "metadata": {
+      "all_fields_present": true,
+      "processed_at": "2025-11-25 12:44:00",
+      "fields_extracted": [
+        "name",
+        "address",
+        "phone_number"
+      ]
+    }
+  },
+  "export_result": {
+    "success": true,
+    "status": "exported",
+    "export_id": "EXPORT_20251125_124400",
+    "filepath": "C:\\New_plan_setup_json\\20251125_124400_20251125_124120_all_details_text.json",
+    "filename": "20251125_124400_20251125_124120_all_details_text.json",
+    "file_size": 514,
+    "message": "Data successfully exported to network folder",
+    "timestamp": "2025-11-25T12:44:00.204510"
+  },
+  "success": true
+}

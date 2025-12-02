@@ -1,0 +1,24 @@
+{
+  "tracking_id": "REQ_20251125_124354",
+  "recipient": "prajush01@gmail.com",
+  "request_type": "missing_fields",
+  "sent_at": "2025-11-25T12:43:57.512806",
+  "status": "pending_response",
+  "validation_result": {
+    "filename": "./data/inbox_attachments\\20251125_124120_only_name_handwritten.pdf",
+    "extracted_data": {
+      "name": "pradeep",
+      "address": "",
+      "phone_number": ""
+    },
+    "missing_fields": [
+      "address",
+      "phone_number"
+    ],
+    "all_fields_present": false,
+    "error_type": null
+  },
+  "email_body": "Dear Requestor,\n\nThank you for submitting your New Plan Setup document \"20251125_124120_only_name_handwritten.pdf\".\n\nUpon automated review, we found that the following mandatory information is MISSING:\n\n   ❌ Address\n   ❌ Phone Number\n\nCURRENT STATUS:\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n✅ Information Received:\n   ✅ Name: pradeep\n\n❌ Information Still Required:\n   ❌ Address\n   ❌ Phone Number\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nNEXT STEPS:\nPlease send a new email with a corrected document containing ALL required information, or provide the missing details listed above.\n\nREQUIRED INFORMATION CHECKLIST:\n\n   ❌ Phone Number - MISSING\n   ❌ Address - MISSING\n   ✅ Name: pradeep\n\nOnce we receive the complete information, your New Plan Setup will be processed automatically.\n\nIf you have any questions or need assistance, please contact us.\n\nBest regards,\n\nJushQuant Associates - Plan Setup Team\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nThis is an automated message from our Agentic AI Workflow System.\n\nFor urgent matters, please contact your JushQuant Associate directly.\n",
+  "follow_ups": [],
+  "resolved": false
+}

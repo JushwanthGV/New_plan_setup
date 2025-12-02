@@ -1,0 +1,55 @@
+# ===================================================================
+# EMAIL CONFIGURATION
+# ===================================================================
+EMAIL_ADDRESS=agentbot134@gmail.com
+APP_PASSWORD=************
+EMAIL_PROVIDER=gmail
+
+# ===================================================================
+# MONITORING CONFIGURATION
+# ===================================================================
+MONITOR_SENDER=demo_sender@gmail.com
+MONITOR_SUBJECT=Daily Report
+CHECK_INTERVAL=30
+
+# ===================================================================
+# LLM CONFIGURATION (GROQ)
+# ===================================================================
+GROQ_API_KEY=gsk_.........
+GROQ_MODEL=llama-3.3-70b-versatile
+
+# ===================================================================
+# DOCUMENT VALIDATION FIELDS
+# ===================================================================
+MANDATORY_FIELDS=name,address,phone_number
+
+# ===================================================================
+# PATH CONFIGURATION
+# ===================================================================
+DOWNLOAD_PATH=./data/inbox_attachments
+VALIDATED_DATA_PATH=./data/validated_documents
+PENDING_REQUESTS_PATH=./data/pending_requests
+
+# Network export folder path (Agent 4 - Data Export)
+# For local testing: ./data/network_export
+# For network share: //server/share/export_folder or Z:/export_folder
+EXPORT_PATH=C:\New_plan_setup_json
+
+# Export logs path
+EXPORT_LOGS_PATH=./data/export_logs
+
+# ===================================================================
+# DATA EXPORT CONFIGURATION (AGENT 4)
+# ===================================================================
+# Log all exports to export_logs folder
+LOG_EXPORTS=true
+
+# ===================================================================
+# NOTES:
+# ===================================================================
+# 1. EXPORT_PATH can be:
+#    - Local folder: ./data/network_export
+#    - Network share (Windows): //server/share/folder or Z:/folder
+#    - Network share (Linux): /mnt/network/folder
+# 2. Check_INTERVAL is in seconds (60 = 1 minute)
+# 3. Ensure the export path has write permissions
