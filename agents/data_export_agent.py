@@ -240,6 +240,7 @@ Export Path: {self.exporter.export_path}
             import sys
             from pathlib import Path
             
+            
             # Get project root
             project_root = Path(__file__).parent.parent
             
@@ -248,8 +249,8 @@ Export Path: {self.exporter.export_path}
             if str(mock_queue_path) not in sys.path:
                 sys.path.append(str(mock_queue_path))
             
-            from queue_manager import QueueManager
-            from config import QUEUE_DATABASE
+            from mock_queue.queue_manager import QueueManager
+            from mock_queue.config import QUEUE_DATABASE
             
             # Ensure queue database path is correct
             if isinstance(QUEUE_DATABASE, Path):
