@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 class DocumentValidatorAgent:
     """
     Agent responsible for validating documents using LLM (Groq)
+    UPDATED: plan_id is now a MANDATORY field (not optional)
     """
     
     def __init__(self, groq_api_key: str, mandatory_fields: List[str], validated_data_path: str, model: str = "llama-3.3-70b-versatile"):
@@ -19,7 +20,7 @@ class DocumentValidatorAgent:
         
         Args:
             groq_api_key: Groq API key
-            mandatory_fields: List of mandatory fields to check
+            mandatory_fields: List of mandatory fields to check (now includes plan_id)
             validated_data_path: Path to store validated JSON data
             model: Groq model to use
         """
@@ -42,17 +43,21 @@ class DocumentValidatorAgent:
     def _create_extraction_prompt(self, document_text: str, filename: str) -> str:
         """
         Create the system prompt for the LLM to extract data
+        UPDATED: All fields including plan_id are now MANDATORY
         """
         fields_list = ', '.join(self.mandatory_fields)
         
-        prompt = f"""You are an expert document data extraction agent. Extract the following mandatory fields from the document: {fields_list}
+        prompt = f"""You are an expert document data extraction agent. Extract the following MANDATORY fields from the document:
+
+MANDATORY FIELDS (ALL REQUIRED): {fields_list}
 
 IMPORTANT RULES:
 1. Return ONLY valid JSON, nothing else
 2. Use exactly these field names: {', '.join(self.mandatory_fields)}
 3. If a field is NOT found, set it to empty string ""
 4. If a field IS found, extract the EXACT value from the document
-5. Do NOT make up or invent data
+5. For plan_id: Look for "Plan ID:", "Plan Id:", "PlanID:", "Plan Number:", or similar labels
+6. Do NOT make up or invent data
 
 Document: {filename}
 
@@ -63,7 +68,8 @@ Return JSON in this exact format:
 {{
   "name": "extracted value or empty string",
   "address": "extracted value or empty string",
-  "phone_number": "extracted value or empty string"
+  "phone_number": "extracted value or empty string",
+  "plan_id": "extracted value or empty string"
 }}
 """
         return prompt
@@ -71,6 +77,7 @@ Return JSON in this exact format:
     def validate_and_extract(self, document_text: str, filename: str) -> Dict[str, Any]:
         """
         Main method to send document text to LLM for extraction and validation
+        UPDATED: plan_id is now treated as mandatory field
         
         Args:
             document_text: Text extracted from the document
@@ -86,7 +93,8 @@ Return JSON in this exact format:
             'extracted_data': {},
             'missing_fields': [],
             'all_fields_present': False,
-            'error_type': None
+            'error_type': None,
+            'plan_id_from_pdf': None  # Still track where Plan ID came from
         }
         
         if not document_text or len(document_text.strip()) < 10:
@@ -120,9 +128,18 @@ Return JSON in this exact format:
                 if field not in extracted_data:
                     extracted_data[field] = ""
             
+            # Track Plan ID extraction (for logging purposes)
+            plan_id_from_pdf = extracted_data.get('plan_id', '').strip()
+            if plan_id_from_pdf:
+                logger.info(f"✓ Plan ID found in PDF: {plan_id_from_pdf}")
+                result['plan_id_from_pdf'] = plan_id_from_pdf
+            else:
+                logger.warning("⚠️  Plan ID NOT found in PDF - will be flagged as missing")
+                result['plan_id_from_pdf'] = None
+            
             result['extracted_data'] = extracted_data
             
-            # Check for missing/empty fields
+            # Check for missing/empty MANDATORY fields (INCLUDING plan_id now)
             missing_fields = []
             for field in self.mandatory_fields:
                 value = extracted_data.get(field, "")
@@ -134,8 +151,8 @@ Return JSON in this exact format:
             
             logger.info(f"Extraction complete for {filename}")
             logger.info(f"  Extracted data: {extracted_data}")
-            logger.info(f"  Missing fields: {missing_fields}")
-            logger.info(f"  All fields present: {result['all_fields_present']}")
+            logger.info(f"  Missing mandatory fields: {missing_fields}")
+            logger.info(f"  All mandatory fields present: {result['all_fields_present']}")
             
         except json.JSONDecodeError as e:
             result['error_type'] = 'llm_json_error'
@@ -176,7 +193,8 @@ Return JSON in this exact format:
             'source_document': validation_result['filename'],
             'extracted_data': validation_result['extracted_data'],
             'validation_status': 'complete',
-            'all_fields_present': True
+            'all_fields_present': True,
+            'plan_id_from_pdf': validation_result.get('plan_id_from_pdf')
         }
         
         # Save to JSON file

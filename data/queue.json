@@ -1,0 +1,1084 @@
+[
+  {
+    "id": "QI_20251215_081443_001",
+    "plan_id": "FIH1VO1",
+    "original_plan_id": "FIH1VO1",
+    "status": "Completed",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_081421_all_details_no_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": ""
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": null,
+      "_source_document": "20251215_081443_20251215_081421_all_details_no_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 0,
+    "retry_history": [],
+    "exception_reason": null,
+    "created_at": "2025-12-15T08:14:43.334472",
+    "updated_at": "2025-12-15T08:14:50.693971",
+    "locked_at": "2025-12-15T08:14:47.102655",
+    "completed_at": "2025-12-15T08:14:50.693971"
+  },
+  {
+    "id": "QI_20251215_085423_002",
+    "plan_id": "PLAN001",
+    "original_plan_id": "PLAN001",
+    "status": "Exception",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 0,
+    "retry_history": [],
+    "exception_reason": "Plan ID Already Exists",
+    "created_at": "2025-12-15T08:54:23.032756",
+    "updated_at": "2025-12-15T08:54:28.537336",
+    "locked_at": "2025-12-15T08:54:26.502614",
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090208_003",
+    "plan_id": "YKWBUBT",
+    "original_plan_id": "PLAN001",
+    "status": "Exception",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 1,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:02:01.617606"
+      }
+    ],
+    "exception_reason": "Plan ID Already Exists",
+    "created_at": "2025-12-15T09:02:08.960325",
+    "updated_at": "2025-12-15T09:02:14.031862",
+    "locked_at": "2025-12-15T09:02:12.009885",
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090249_004",
+    "plan_id": "B7VAJRN",
+    "original_plan_id": "PLAN001",
+    "status": "Exception",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 1,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:02:42.894319"
+      }
+    ],
+    "exception_reason": "Plan ID Already Exists",
+    "created_at": "2025-12-15T09:02:49.138713",
+    "updated_at": "2025-12-15T09:02:52.110235",
+    "locked_at": "2025-12-15T09:02:50.089283",
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090255_005",
+    "plan_id": "OYGHTDI",
+    "original_plan_id": "PLAN001",
+    "status": "Exception",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 2,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:02:01.617606"
+      },
+      {
+        "attempt": 2,
+        "plan_id": "YKWBUBT",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:02:49.143235"
+      }
+    ],
+    "exception_reason": "Plan ID Already Exists",
+    "created_at": "2025-12-15T09:02:55.351197",
+    "updated_at": "2025-12-15T09:03:00.157390",
+    "locked_at": "2025-12-15T09:02:58.132404",
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090337_006",
+    "plan_id": "A06935O",
+    "original_plan_id": "PLAN001",
+    "status": "Exception",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 1,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:03:30.213056"
+      }
+    ],
+    "exception_reason": "Plan ID Already Exists",
+    "created_at": "2025-12-15T09:03:37.594320",
+    "updated_at": "2025-12-15T09:03:43.262045",
+    "locked_at": "2025-12-15T09:03:41.237063",
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090343_007",
+    "plan_id": "39RR197",
+    "original_plan_id": "PLAN001",
+    "status": "Exception",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 2,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:02:01.617606"
+      },
+      {
+        "attempt": 2,
+        "plan_id": "YKWBUBT",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:03:37.597322"
+      }
+    ],
+    "exception_reason": "Plan ID Already Exists",
+    "created_at": "2025-12-15T09:03:43.795743",
+    "updated_at": "2025-12-15T09:03:46.297250",
+    "locked_at": "2025-12-15T09:03:44.267715",
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090350_008",
+    "plan_id": "9M10N8R",
+    "original_plan_id": "PLAN001",
+    "status": "Exception",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 2,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:02:42.894319"
+      },
+      {
+        "attempt": 2,
+        "plan_id": "B7VAJRN",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:03:43.799740"
+      }
+    ],
+    "exception_reason": "Plan ID Already Exists",
+    "created_at": "2025-12-15T09:03:50.353016",
+    "updated_at": "2025-12-15T09:03:54.363826",
+    "locked_at": "2025-12-15T09:03:52.331397",
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090434_009",
+    "plan_id": "BYAD6CC",
+    "original_plan_id": "PLAN001",
+    "status": "Exception",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 1,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:04:27.663487"
+      }
+    ],
+    "exception_reason": "Plan ID Already Exists",
+    "created_at": "2025-12-15T09:04:34.225179",
+    "updated_at": "2025-12-15T09:04:37.507530",
+    "locked_at": "2025-12-15T09:04:35.457491",
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090440_010",
+    "plan_id": "N07R5X7",
+    "original_plan_id": "PLAN001",
+    "status": "Exception",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 2,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:02:01.617606"
+      },
+      {
+        "attempt": 2,
+        "plan_id": "YKWBUBT",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:04:34.228177"
+      }
+    ],
+    "exception_reason": "Plan ID Already Exists",
+    "created_at": "2025-12-15T09:04:40.496443",
+    "updated_at": "2025-12-15T09:04:45.558709",
+    "locked_at": "2025-12-15T09:04:43.537935",
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090447_011",
+    "plan_id": "WFPIP0N",
+    "original_plan_id": "PLAN001",
+    "status": "Exception",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 2,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:02:42.894319"
+      },
+      {
+        "attempt": 2,
+        "plan_id": "B7VAJRN",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:04:40.501442"
+      }
+    ],
+    "exception_reason": "Plan ID Already Exists",
+    "created_at": "2025-12-15T09:04:47.014341",
+    "updated_at": "2025-12-15T09:04:53.602924",
+    "locked_at": "2025-12-15T09:04:51.582663",
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090456_012",
+    "plan_id": "X1KR1ZB",
+    "original_plan_id": "PLAN001",
+    "status": "Exception",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 2,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:03:30.213056"
+      },
+      {
+        "attempt": 2,
+        "plan_id": "A06935O",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:04:50.121148"
+      }
+    ],
+    "exception_reason": "Plan ID Already Exists",
+    "created_at": "2025-12-15T09:04:56.630685",
+    "updated_at": "2025-12-15T09:05:01.642023",
+    "locked_at": "2025-12-15T09:04:59.626805",
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090558_013",
+    "plan_id": "K6NUE12",
+    "original_plan_id": "PLAN001",
+    "status": "Pending",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 1,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:05:52.321814"
+      }
+    ],
+    "exception_reason": null,
+    "created_at": "2025-12-15T09:05:58.959580",
+    "updated_at": "2025-12-15T09:05:58.959580",
+    "locked_at": null,
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090605_014",
+    "plan_id": "85E6JDA",
+    "original_plan_id": "PLAN001",
+    "status": "Pending",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 2,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:02:01.617606"
+      },
+      {
+        "attempt": 2,
+        "plan_id": "YKWBUBT",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:05:58.964578"
+      }
+    ],
+    "exception_reason": null,
+    "created_at": "2025-12-15T09:06:05.178269",
+    "updated_at": "2025-12-15T09:06:05.178269",
+    "locked_at": null,
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090611_015",
+    "plan_id": "QGPNETU",
+    "original_plan_id": "PLAN001",
+    "status": "Pending",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 2,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:02:42.894319"
+      },
+      {
+        "attempt": 2,
+        "plan_id": "B7VAJRN",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:06:05.183261"
+      }
+    ],
+    "exception_reason": null,
+    "created_at": "2025-12-15T09:06:11.515142",
+    "updated_at": "2025-12-15T09:06:11.515142",
+    "locked_at": null,
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090621_016",
+    "plan_id": "OBNROMI",
+    "original_plan_id": "PLAN001",
+    "status": "Pending",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 2,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:03:30.213056"
+      },
+      {
+        "attempt": 2,
+        "plan_id": "A06935O",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:06:14.666748"
+      }
+    ],
+    "exception_reason": null,
+    "created_at": "2025-12-15T09:06:21.482433",
+    "updated_at": "2025-12-15T09:06:21.482433",
+    "locked_at": null,
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090633_017",
+    "plan_id": "KRG3J1H",
+    "original_plan_id": "PLAN001",
+    "status": "Pending",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 2,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:04:27.663487"
+      },
+      {
+        "attempt": 2,
+        "plan_id": "BYAD6CC",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:06:27.766477"
+      }
+    ],
+    "exception_reason": null,
+    "created_at": "2025-12-15T09:06:33.902559",
+    "updated_at": "2025-12-15T09:06:33.902559",
+    "locked_at": null,
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090724_018",
+    "plan_id": "EQLUU6X",
+    "original_plan_id": "PLAN001",
+    "status": "Pending",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 1,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:07:18.032755"
+      }
+    ],
+    "exception_reason": null,
+    "created_at": "2025-12-15T09:07:24.823439",
+    "updated_at": "2025-12-15T09:07:24.823439",
+    "locked_at": null,
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090731_019",
+    "plan_id": "IOV2QQE",
+    "original_plan_id": "PLAN001",
+    "status": "Pending",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 2,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:02:01.617606"
+      },
+      {
+        "attempt": 2,
+        "plan_id": "YKWBUBT",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:07:24.827438"
+      }
+    ],
+    "exception_reason": null,
+    "created_at": "2025-12-15T09:07:31.222167",
+    "updated_at": "2025-12-15T09:07:31.222167",
+    "locked_at": null,
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090737_020",
+    "plan_id": "1PKK7S1",
+    "original_plan_id": "PLAN001",
+    "status": "Pending",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 2,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:02:42.894319"
+      },
+      {
+        "attempt": 2,
+        "plan_id": "B7VAJRN",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:07:31.227779"
+      }
+    ],
+    "exception_reason": null,
+    "created_at": "2025-12-15T09:07:37.596695",
+    "updated_at": "2025-12-15T09:07:37.596695",
+    "locked_at": null,
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090747_021",
+    "plan_id": "RHBGA9W",
+    "original_plan_id": "PLAN001",
+    "status": "Pending",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 2,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:03:30.213056"
+      },
+      {
+        "attempt": 2,
+        "plan_id": "A06935O",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:07:41.075893"
+      }
+    ],
+    "exception_reason": null,
+    "created_at": "2025-12-15T09:07:47.276220",
+    "updated_at": "2025-12-15T09:07:47.276220",
+    "locked_at": null,
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090800_022",
+    "plan_id": "BH1YGMF",
+    "original_plan_id": "PLAN001",
+    "status": "Pending",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 2,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:04:27.663487"
+      },
+      {
+        "attempt": 2,
+        "plan_id": "BYAD6CC",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:07:53.789180"
+      }
+    ],
+    "exception_reason": null,
+    "created_at": "2025-12-15T09:08:00.196125",
+    "updated_at": "2025-12-15T09:08:00.196125",
+    "locked_at": null,
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090852_023",
+    "plan_id": "CVAG5YW",
+    "original_plan_id": "PLAN001",
+    "status": "Pending",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 1,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:08:46.034175"
+      }
+    ],
+    "exception_reason": null,
+    "created_at": "2025-12-15T09:08:52.156557",
+    "updated_at": "2025-12-15T09:08:52.156557",
+    "locked_at": null,
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090858_024",
+    "plan_id": "5L5IPP0",
+    "original_plan_id": "PLAN001",
+    "status": "Pending",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 2,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:02:01.617606"
+      },
+      {
+        "attempt": 2,
+        "plan_id": "YKWBUBT",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:08:52.161624"
+      }
+    ],
+    "exception_reason": null,
+    "created_at": "2025-12-15T09:08:58.550512",
+    "updated_at": "2025-12-15T09:08:58.550512",
+    "locked_at": null,
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090905_025",
+    "plan_id": "OL1F1YQ",
+    "original_plan_id": "PLAN001",
+    "status": "Pending",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 2,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:02:42.894319"
+      },
+      {
+        "attempt": 2,
+        "plan_id": "B7VAJRN",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:08:58.556506"
+      }
+    ],
+    "exception_reason": null,
+    "created_at": "2025-12-15T09:09:05.567405",
+    "updated_at": "2025-12-15T09:09:05.567405",
+    "locked_at": null,
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090915_026",
+    "plan_id": "E08JN89",
+    "original_plan_id": "PLAN001",
+    "status": "Pending",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 2,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:03:30.213056"
+      },
+      {
+        "attempt": 2,
+        "plan_id": "A06935O",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:09:08.740156"
+      }
+    ],
+    "exception_reason": null,
+    "created_at": "2025-12-15T09:09:15.194106",
+    "updated_at": "2025-12-15T09:09:15.194106",
+    "locked_at": null,
+    "completed_at": null
+  },
+  {
+    "id": "QI_20251215_090928_027",
+    "plan_id": "6E1GM28",
+    "original_plan_id": "PLAN001",
+    "status": "Pending",
+    "data": {
+      "filename": "./data/inbox_attachments\\20251215_085356_all_details_with_plan_id.pdf",
+      "extracted_data": {
+        "name": "Vishwajeet",
+        "address": "Delhi",
+        "phone_number": "9182823445",
+        "plan_id": "PLAN001"
+      },
+      "missing_fields": [],
+      "all_fields_present": true,
+      "error_type": null,
+      "plan_id_from_pdf": "PLAN001",
+      "_source_document": "20251215_085422_20251215_085356_all_details_with_plan_id.json"
+    },
+    "vdi_assigned": "VDI_Server_01",
+    "retry_count": 2,
+    "retry_history": [
+      {
+        "attempt": 1,
+        "plan_id": "PLAN001",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:04:27.663487"
+      },
+      {
+        "attempt": 2,
+        "plan_id": "BYAD6CC",
+        "exception": "Plan ID Already Exists",
+        "vdi": "VDI_Server_01",
+        "timestamp": "2025-12-15T09:09:22.082846"
+      }
+    ],
+    "exception_reason": null,
+    "created_at": "2025-12-15T09:09:28.297686",
+    "updated_at": "2025-12-15T09:09:28.297686",
+    "locked_at": null,
+    "completed_at": null
+  }
+]

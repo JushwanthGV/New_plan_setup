@@ -3,6 +3,7 @@ import os
 import logging
 import io
 
+
 # --- FIX ENCODING ON WINDOWS ---
 if os.name == 'nt':
     # Force Python to use UTF-8
@@ -16,9 +17,11 @@ if os.name == 'nt':
     sys.stdout.reconfigure(encoding='utf-8')
     sys.stderr.reconfigure(encoding='utf-8')
 
+
 import time
 from dotenv import load_dotenv
 from pathlib import Path
+
 
 from utils.outlook_connector import OutlookConnector
 from utils.document_parser import DocumentParser
@@ -28,6 +31,9 @@ from agents.document_validator_agent import DocumentValidatorAgent
 from agents.requestor_interaction_agent import RequestorInteractionAgent
 from agents.data_export_agent import DataExportAgent
 from graph.workflow import EmailProcessingWorkflow
+# --- ADDED IMPORTS FOR EXCEPTION HANDLER ---
+from mock_queue.queue_manager import QueueManager
+from agents.bp_exception_handler import BPExceptionHandler
 
 
 # Configure logging
@@ -40,7 +46,9 @@ logging.basicConfig(
     ]
 )
 
+
 logger = logging.getLogger(__name__)
+
 
 
 # ---------------------------------------------------------
@@ -52,6 +60,7 @@ def format_status(ok: bool, message: str = ""):
         return f"✓ {message}"
     else:
         return f"✗ {message}"
+
 
 
 def load_configuration():
@@ -96,6 +105,7 @@ def load_configuration():
     return config
 
 
+
 def setup_environment(config: dict):
     directories = [
         config['download_path'],
@@ -108,6 +118,28 @@ def setup_environment(config: dict):
     for directory in directories:
         Path(directory).mkdir(parents=True, exist_ok=True)
         logger.info(f"✓ Directory ready: {directory}")
+
+
+
+def ensure_queue_database_exists():
+    """Ensure queue database file and directory exist"""
+    import json
+    
+    queue_path = Path("./data/queue.json")
+    
+    # Create directory if it doesn't exist
+    queue_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Create empty queue file if it doesn't exist
+    if not queue_path.exists():
+        with open(queue_path, 'w', encoding='utf-8') as f:
+            json.dump([], f)
+        logger.info(f"✓ Created queue database: {queue_path}")
+    else:
+        logger.info(f"✓ Queue database exists: {queue_path}")
+    
+    return str(queue_path)
+
 
 
 def run_once(workflow: EmailProcessingWorkflow):
@@ -124,13 +156,18 @@ def run_once(workflow: EmailProcessingWorkflow):
     return result
 
 
-def run_continuous(workflow: EmailProcessingWorkflow, check_interval: int):
+def run_continuous(workflow: EmailProcessingWorkflow, exception_handler, check_interval: int):
     logger.info(f"Starting continuous monitoring (checking every {check_interval} seconds)")
     logger.info("Press Ctrl+C to stop")
     
     try:
         while True:
             run_once(workflow)
+            
+            # --- ADDED: Run Exception Handler Logic ---
+            logger.info("Checking for Worker Exceptions...")
+            exception_handler.process_exceptions()
+            
             logger.info(f"⏳ Waiting {check_interval} seconds until next check...")
             time.sleep(check_interval)
     except KeyboardInterrupt:
@@ -140,12 +177,14 @@ def run_continuous(workflow: EmailProcessingWorkflow, check_interval: int):
         raise
 
 
+
 def main():
     try:
         logger.info("Loading configuration...")
         config = load_configuration()
         
         setup_environment(config)
+
 
         # Initialize all agents
         logger.info("Connecting to email service...")
@@ -182,11 +221,25 @@ def main():
         logger.info("Initializing Data Exporter...")
         data_exporter = DataExporter(config['export_path'])
 
+
         logger.info("Initializing AGENT 4: Data Export Agent...")
         data_export = DataExportAgent(
             data_exporter=data_exporter,
             log_exports=config['log_exports'],
             log_path=config['export_logs_path']
+        )
+
+        # --- ADDED: Ensure queue database exists BEFORE Agent 5 initialization ---
+        logger.info("Ensuring queue database exists...")
+        queue_db_path = ensure_queue_database_exists()
+
+        # --- MODIFIED: Initialize Agent 5 with explicit path ---
+        logger.info("Initializing AGENT 5: BP Exception Handler...")
+        queue_manager = QueueManager(queue_db_path)  # Use explicit path instead of QUEUE_DATABASE
+        exception_handler = BPExceptionHandler(
+            queue_manager=queue_manager,
+            requestor_interaction_agent=requestor_interaction,
+            outlook_connector=outlook_connector
         )
         
         # Build workflow
@@ -207,6 +260,7 @@ def main():
         s3 = requestor_interaction.get_status()
         s4 = data_export.get_status()
 
+
         logger.info("\n" + "="*80)
         logger.info("AGENT STATUS:")
         
@@ -214,20 +268,29 @@ def main():
         logger.info("  " + format_status(True,  f"Agent 2: {s2['agent']}"))
         logger.info("  " + format_status(True,  f"Agent 3: {s3['agent']}"))
 
+
         if s4.get("export_path_accessible", False):
             logger.info("  " + format_status(True,  f"Agent 4: {s4['agent']}"))
             logger.info(f"     Export Path: {s4['export_path']}")
         else:
             logger.info("  " + format_status(False, f"Agent 4: {s4['agent']} (export path inaccessible)"))
+        
+        # --- ADDED: Status for Agent 5 ---
+        logger.info("  " + format_status(True, "Agent 5: BP Exception Handler"))
+        logger.info(f"     Queue Database: {queue_db_path}")
 
         logger.info("="*80)
 
+
         # Run continuous cycle
-        run_continuous(workflow, config['check_interval'])
+        # --- UPDATED: Pass exception_handler ---
+        run_continuous(workflow, exception_handler, config['check_interval'])
+
 
     except Exception as e:
         logger.error(f"❌ Fatal error: {str(e)}", exc_info=True)
         raise
+
 
 
 if __name__ == "__main__":

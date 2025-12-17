@@ -1,251 +1,94 @@
-Key Requirements:
-1. VDI (Virtual Desktop Infrastructure) Setup:
+📧 EMAIL RECEIVED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+From: prajush01@gmail.com
+To: agentbot134@gmail.com
+Subject: Daily Report
+Attachment: application_form.pdf
 
-Blue Prism runs inside VirtualBox VM (or similar)
-When retry needed → Agent must restart VirtualBox VM
-This simulates real enterprise RPA where bots run on virtual machines
+PDF Contains:
+  Name: John Smith
+  Address: 123 Main Street, New York, NY
+  Phone: +1-555-0100
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Research needed:
+↓
 
-How to control VirtualBox VM from Python (start/stop/restart)
-VirtualBox API or command-line tools
+🤖 AGENT 1: Email Monitor
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ Detects email (checks every 30 seconds)
+✓ Downloads PDF to: ./data/inbox_attachments/
+✓ Marks email as read
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+↓
 
-2. Exception Details from BP:
-When BP fails, it reports:
+📄 AGENT 2: Document Validator (Groq LLM + OCR)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ Extracts text from PDF (Multi-pass OCR with TrOCR)
+✓ Sends text to Groq LLM (llama-3.3-70b-versatile)
+✓ LLM extracts structured data:
+  {
+    "name": "John Smith",
+    "address": "123 Main Street, New York, NY",
+    "phone_number": "+1-555-0100"
+  }
+✓ Validates: ALL 3 mandatory fields present ✓
+✓ Saves to: ./data/validated_documents/timestamp_application_form.json
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Exception Type: "Plan ID already exists" (or other errors)
-VDI Used: "VDI_Server_03"
-Plan ID: "PLN_12345"
+↓
 
-Agent must capture all this info.
+💬 AGENT 3: Requestor Interaction
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ Checks validation result
+✓ All fields present → NO EMAIL SENT (silent success)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-3. Exception Handling Logic:
-Type 1: "Plan ID Already Exists"
-First Failure:
+↓
 
-Agent reads exception from queue
-Generates new Plan ID
-Updates JSON file with new Plan ID
-Emails user:
+📤 AGENT 4: Data Export
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ Converts to JSON format
+✓ Saves to network folder: C:\New_plan_setup_json\timestamp_application_form.json
+✓ Generates Plan ID: ABC1234 (random 7-char alphanumeric)
+✓ Adds to Blue Prism Queue: ./data/queue.json
 
-   Subject: Plan Setup Failed - Retrying with New ID
-   
-   Your application for "John Doe Plan" (Plan ID: PLN_12345) 
-   failed because this Plan ID already exists.
-   
-   ✓ We are automatically retrying with new Plan ID: PLN_12345_v2
-   
-   No action needed from you.
-
-Restarts VDI/BP process
-Re-adds item to queue with status: "Retry_1"
-Dashboard shows: "Retry Attempt 1"
-
-Second Failure (same error):
-
-Agent detects this is 2nd failure for same item
-Dashboard shows: "Retry_2_Failed" with Plan ID
-Emails user:
-
-   Subject: Plan Setup Failed After 2 Attempts
-   
-   Your application failed twice due to Plan ID conflicts.
-   
-   Attempts:
-   - PLN_12345 → Failed (exists)
-   - PLN_12345_v2 → Failed (exists)
-   
-   Please contact support to resolve this issue.
-
-Marks as: "Failed_Max_Retries"
-
-Type 2: Other Exceptions (Data Issues)
-First Failure:
-
-Agent detects it's NOT "Plan ID exists"
-Immediately emails user (no retry):
-
-   Subject: Plan Setup Failed - Data Issue
-   
-   Your application failed due to:
-   ❌ Invalid phone number format: "ABC-123-4567"
-   
-   Please correct your data and resubmit.
-
-Dashboard shows: "Exception_Data_Error"
-No retry, no VDI restart
-
-
-4. Retry Tracking:
-Queue item must track:
-json{
-  "id": "QI_001",
-  "status": "Retry_1",  // or "Pending", "Locked", "Completed", "Exception", "Retry_2_Failed"
-  "plan_id": "PLN_12345_v2",
-  "original_plan_id": "PLN_12345",
-  "retry_count": 1,
-  "retry_history": [
-    {
-      "attempt": 1,
-      "plan_id": "PLN_12345",
-      "exception": "Plan ID already exists",
-      "vdi": "VDI_Server_03",
-      "timestamp": "2025-11-25 10:30:15"
-    }
-  ],
-  "vdi_assigned": "VDI_Server_03",
-  "data": { "name": "John", "address": "...", "phone": "..." }
+Queue Item Created:
+{
+  "id": "QI_20241214_091656_001",
+  "plan_id": "ABC1234",           ← NEW PLAN ID HERE!
+  "original_plan_id": "ABC1234",
+  "status": "Pending",
+  "data": {
+    "name": "John Smith",
+    "address": "123 Main Street, New York, NY",
+    "phone_number": "+1-555-0100",
+    "_source_document": "timestamp_application_form.json",
+    "_requester_email": "prajush01@gmail.com"
+  },
+  "vdi_assigned": "VDI_Server_01",
+  "retry_count": 0,
+  "exception_reason": null
 }
-```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
----
+↓
 
-### **5. Dashboard Columns:**
-```
-╔════════╦═══════════════╦═══════════════╦═════════════╦═══════════════════════╦════════════════╗
-║ ID     ║ Status        ║ Plan ID       ║ Retry Count ║ Exception Reason      ║ VDI Used       ║
-╠════════╬═══════════════╬═══════════════╬═════════════╬═══════════════════════╬════════════════╣
-║ QI_001 ║ Completed     ║ PLN_10001     ║ 0           ║ -                     ║ VDI_Server_01  ║
-║ QI_002 ║ Retry_1       ║ PLN_10002_v2  ║ 1           ║ Plan ID exists        ║ VDI_Server_02  ║
-║ QI_003 ║ Retry_2_Failed║ PLN_10003_v3  ║ 2           ║ Plan ID exists (2x)   ║ VDI_Server_03  ║
-║ QI_004 ║ Exception     ║ PLN_10004     ║ 0           ║ Invalid phone format  ║ VDI_Server_01  ║
-║ QI_005 ║ Locked        ║ PLN_10005     ║ 0           ║ -                     ║ VDI_Server_02  ║
-║ QI_006 ║ Pending       ║ PLN_10006     ║ 0           ║ -                     ║ Not assigned   ║
-╚════════╩═══════════════╩═══════════════╩═════════════╩═══════════════════════╩════════════════╝
-Status Meanings:
+🤖 BLUE PRISM WORKER (bp_worker.py)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ Polls queue every 5 seconds
+✓ Picks up item: QI_20241214_091656_001
+✓ Changes status to: "Locked" (processing)
+✓ Simulates entering data into backend system:
+  - Opens application
+  - Enters Plan ID: ABC1234
+  - Fills Name: John Smith
+  - Fills Address: 123 Main Street...
+  - Fills Phone: +1-555-0100
+  - Submits form
+✓ SUCCESS! Changes status to: "Completed"
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Pending → Waiting in queue
-Locked → BP is processing right now
-Completed → Success ✅
-Retry_1 → Failed once, retrying with new Plan ID
-Retry_2_Failed → Failed twice, escalated to user
-Exception → Non-retryable error (data issue)
+↓
 
-
-6. VDI Restart Research:
-Options to control VirtualBox from Python:
-Option A: VBoxManage CLI
-pythonimport subprocess
-
-def restart_vdi(vm_name="BluePrism_VDI"):
-    # Stop VM
-    subprocess.run(["VBoxManage", "controlvm", vm_name, "poweroff"])
-    time.sleep(5)
-    # Start VM
-    subprocess.run(["VBoxManage", "startvm", vm_name, "--type", "headless"])
-    time.sleep(10)  # Wait for boot
-Option B: VirtualBox Python SDK
-pythonimport virtualbox
-
-vbox = virtualbox.VirtualBox()
-vm = vbox.find_machine("BluePrism_VDI")
-session = vm.create_session()
-session.console.power_down()
-time.sleep(5)
-vm.launch_vm_process(session, "headless", "")
-Option C: VMware Workstation (Alternative)
-pythonimport subprocess
-subprocess.run(["vmrun", "stop", "path/to/BluePrism.vmx"])
-subprocess.run(["vmrun", "start", "path/to/BluePrism.vmx", "nogui"])
-```
-
-**Question:** Do you have VirtualBox installed? Or should we mock this for demo?
-
----
-
-### **7. Complete Workflow:**
-```
-┌─────────────────────────────────────────────────────────┐
-│ Email System → Queue (Pending)                          │
-└─────────────────────────────────────────────────────────┘
-                    ↓
-┌─────────────────────────────────────────────────────────┐
-│ BP Worker (in VirtualBox VM)                            │
-│   └─ Process item                                       │
-│       ├─ Success → Completed (show in dashboard)        │
-│       └─ Exception → Report: Type, VDI, Plan ID         │
-└─────────────────────────────────────────────────────────┘
-                    ↓
-┌─────────────────────────────────────────────────────────┐
-│ Agent 5: Exception Handler                              │
-│   └─ Monitors exceptions                                │
-│       │                                                  │
-│       ├─ "Plan ID exists" (1st time)                    │
-│       │   ├─ Generate new Plan ID                       │
-│       │   ├─ Update JSON file                           │
-│       │   ├─ Email user: "Retrying with new ID"         │
-│       │   ├─ Restart VDI                                │
-│       │   └─ Add to queue as "Retry_1"                  │
-│       │                                                  │
-│       ├─ "Plan ID exists" (2nd time)                    │
-│       │   ├─ Dashboard: "Retry_2_Failed" + Plan ID      │
-│       │   ├─ Email user: "Failed after 2 attempts"      │
-│       │   └─ Mark as "Failed_Max_Retries"               │
-│       │                                                  │
-│       └─ Other exception (data issue)                   │
-│           ├─ Email user immediately with error details  │
-│           └─ Mark as "Exception" (no retry)             │
-└─────────────────────────────────────────────────────────┘
-```
-
----
-
-### **8. Email Templates:**
-
-#### **Email 1: First Retry (Plan ID conflict)**
-```
-Subject: Plan Setup - Automatic Retry in Progress
-
-Dear John Doe,
-
-Your plan setup submission failed because Plan ID "PLN_12345" 
-already exists in the system.
-
-✓ We are automatically retrying with a new Plan ID: PLN_12345_v2
-
-No action is required from you. You will receive confirmation 
-once the setup is complete.
-
-Tracking ID: QI_002
-VDI Used: VDI_Server_03
-
----
-JushQuant Associates - Automated Plan Setup System
-```
-
-#### **Email 2: Second Failure (Plan ID conflict again)**
-```
-Subject: Plan Setup Failed - Manual Intervention Required
-
-Dear John Doe,
-
-Your plan setup has failed after 2 automatic retry attempts:
-
-Attempt 1: Plan ID "PLN_12345" → Failed (already exists)
-Attempt 2: Plan ID "PLN_12345_v2" → Failed (already exists)
-
-This indicates a systematic conflict. Please contact our support 
-team with Tracking ID: QI_002
-
----
-JushQuant Associates - Automated Plan Setup System
-```
-
-#### **Email 3: Data Issue (no retry)**
-```
-Subject: Plan Setup Failed - Data Correction Required
-
-Dear John Doe,
-
-Your plan setup submission failed due to a data validation error:
-
-❌ Issue: Invalid phone number format
-   Provided: "ABC-123-4567"
-   Expected: 10-digit number (e.g., "9876543210")
-
-Please correct your data and resubmit.
-
-Tracking ID: QI_004
-
----
+🎉 RESULT: Application processed successfully!
