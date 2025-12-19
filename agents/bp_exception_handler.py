@@ -1,7 +1,7 @@
 """
 Agent 5: Blue Prism Exception Handler
 Monitors BP queue for exceptions and handles retries with persistent registry
-UPDATED: Uses retry registry to prevent infinite loops and handle duplicate submissions
+UPDATED: Sends email notification to sender when retrying with new Plan ID
 """
 
 import logging
@@ -31,9 +31,19 @@ logger = logging.getLogger(__name__)
 class BPExceptionHandler:
     """Agent 5 - Monitors BP exceptions and handles retries with persistent registry"""
     
-    def __init__(self, queue_manager, requestor_interaction_agent, outlook_connector=None):
+    def __init__(self, queue_manager: QueueManager, 
+                 requestor_interaction_agent,
+                 outlook_connector):
+        """
+        Initialize BP Exception Handler
+        
+        Args:
+            queue_manager: Instance of QueueManager
+            requestor_interaction_agent: Agent 3 for sending emails
+            outlook_connector: Email connector
+        """
         self.queue = queue_manager
-        self.requestor_interaction_agent = requestor_interaction_agent
+        self.interaction_agent = requestor_interaction_agent
         self.outlook = outlook_connector
         self.max_retries = MAX_RETRY_ATTEMPTS
         
@@ -65,7 +75,7 @@ class BPExceptionHandler:
     
     def check_duplicate_submission(self, plan_id: str, requester_email: str) -> Optional[Dict]:
         """
-        NEW: Check if this Plan ID was already escalated
+        Check if this Plan ID was already escalated
         
         Args:
             plan_id: Plan ID from incoming email
@@ -236,7 +246,7 @@ class BPExceptionHandler:
         # Update registry with new attempt
         self._update_registry(original_plan_id, new_plan_id, new_retry_count, 'IN_PROGRESS', requester_email)
         
-        # Send retry notification email
+        # ✅ SEND RETRY NOTIFICATION EMAIL TO SENDER
         self._send_retry_notification_email(item, new_plan_id, new_retry_count, retry_status)
         
         # Restart VDI
@@ -291,51 +301,75 @@ class BPExceptionHandler:
     def _send_retry_notification_email(self, item: Dict[str, Any], 
                                        new_plan_id: str, retry_attempt: int,
                                        retry_status: Dict):
-        """Send email notification about retry"""
+        """
+        ✅ UPDATED: Send detailed email notification about retry with new Plan ID
+        
+        Args:
+            item: Queue item data
+            new_plan_id: The newly generated Plan ID for retry
+            retry_attempt: Current retry attempt number (1 or 2)
+            retry_status: Registry status with previous attempts
+        """
         data = item['data']
         name = data.get('name', 'Customer')
         old_plan_id = item['plan_id']
         original_plan_id = item.get('original_plan_id', old_plan_id)
         
-        # Build attempt history
+        # Build attempt history showing ALL previous attempts
         attempt_history = ""
         for attempt in retry_status['attempts']:
-            attempt_history += f"Attempt {attempt['retry_number']}: Plan ID '{attempt['plan_id']}'\n"
+            attempt_history += f"   • Attempt {attempt['retry_number']}: Plan ID '{attempt['plan_id']}' → Failed\n"
+        
+        # Add current attempt
+        attempt_history += f"   • Attempt {retry_attempt}: Plan ID '{new_plan_id}' → Retrying NOW\n"
         
         email_body = f"""Dear {name},
 
-Your plan setup submission encountered an issue and is being automatically retried.
+Your plan setup submission encountered an issue and is being AUTOMATICALLY RETRIED.
 
-ISSUE DETECTED:
-┌────────────────────────────────────────────────┐
-│ ⚠️  Plan ID "{old_plan_id}" already exists     │
-│    in the system.                              │
-└────────────────────────────────────────────────┘
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-AUTOMATIC RETRY IN PROGRESS:
-✓ New Plan ID Generated: {new_plan_id}
-✓ Retry Attempt: {retry_attempt} of {self.max_retries}
-✓ Processing System: VDI_Server_01 (restarted)
+⚠️  ISSUE DETECTED:
+   Plan ID "{old_plan_id}" already exists in the system.
 
-NO ACTION REQUIRED from you. We are automatically retrying your submission 
-with the new Plan ID. You will receive confirmation once processing is complete.
+✅ AUTOMATIC RETRY IN PROGRESS:
+   We have automatically generated a NEW Plan ID and are retrying your submission.
 
-TRACKING INFORMATION:
-┌────────────────────────────────────────────────┐
-│ Queue Item ID: {item['id']}
-│ Original Plan ID: {original_plan_id}
-│ Previous Plan ID: {old_plan_id}
-│ New Plan ID: {new_plan_id}
-│ Retry Attempt: {retry_attempt}
-│
-│ Retry History:
-│ {attempt_history}
-└────────────────────────────────────────────────┘
+   🆕 NEW PLAN ID: {new_plan_id}
+   🔄 Retry Attempt: {retry_attempt} of {self.max_retries}
+   🖥️  Processing System: {VDI_NAME} (restarted)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 TRACKING INFORMATION:
+
+   Queue Item ID: {item['id']}
+   Original Plan ID: {original_plan_id}
+   Previous Plan ID: {old_plan_id}
+   🆕 NEW Plan ID: {new_plan_id}
+   
+   Retry History:
+{attempt_history}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ NO ACTION REQUIRED FROM YOU
+
+We are automatically processing your submission with the new Plan ID.
+You will receive:
+   • Success confirmation if processing completes
+   • Another retry notification if we need to try again
+   • Escalation notice if all retries fail
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 If you have any questions, please contact our support team.
 
 Best regards,
 JushQuant Associates - Automated Plan Setup System
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Automated Notification | Retry #{retry_attempt} | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 """
         
         try:
@@ -343,10 +377,12 @@ JushQuant Associates - Automated Plan Setup System
             
             self.outlook.send_email(
                 to=recipient,
-                subject=f"Plan Setup - Automatic Retry #{retry_attempt}",
+                subject=f"🔄 Plan Setup - Automatic Retry #{retry_attempt} | New Plan ID: {new_plan_id}",
                 body=email_body
             )
             logger.info(f"✅ Retry notification email sent to {recipient}")
+            logger.info(f"   New Plan ID: {new_plan_id}")
+            logger.info(f"   Retry Attempt: {retry_attempt}")
         except Exception as e:
             logger.error(f"❌ Failed to send retry notification: {str(e)}")
     
@@ -359,52 +395,66 @@ JushQuant Associates - Automated Plan Setup System
         # Build complete attempt history
         attempt_history = ""
         for idx, attempt in enumerate(retry_status['attempts'], 1):
-            attempt_history += f"Attempt {idx}: Plan ID '{attempt['plan_id']}' → Failed (Plan ID Already Exists)\n"
+            attempt_history += f"   Attempt {idx}: Plan ID '{attempt['plan_id']}' → Failed (Plan ID Already Exists)\n"
         
         email_body = f"""Dear {name},
 
-Your plan setup submission has failed after multiple automatic retry attempts.
+Your plan setup submission has FAILED after multiple automatic retry attempts.
 
-ISSUE SUMMARY:
-┌──────────────────────────────────────────────────────────┐
-│ ❌ Plan ID conflict detected on ALL {len(retry_status['attempts'])} attempts    │
-└──────────────────────────────────────────────────────────┘
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-ORIGINAL PLAN ID PROVIDED:
-{original_plan_id}
+❌ ISSUE SUMMARY:
+   Plan ID conflict detected on ALL {len(retry_status['attempts'])} attempts
 
-RETRY HISTORY (All Failed):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 ORIGINAL PLAN ID PROVIDED:
+   {original_plan_id}
+
+🔄 RETRY HISTORY (All Failed):
 {attempt_history}
 
-REASON FOR FAILURE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔍 REASON FOR FAILURE:
+
 This indicates a systematic conflict with existing plan records. 
 Possible causes:
-• The document may be corrupted or incomplete
-• The Plan ID format may not match system requirements
-• There may be a data integrity issue in the source document
-• System may require manual intervention for this specific case
 
-NEXT STEPS:
+   • The document may be corrupted or incomplete
+   • The Plan ID format may not match system requirements
+   • There may be a data integrity issue in the source document
+   • System may require manual intervention for this specific case
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📞 NEXT STEPS - MANUAL REVIEW REQUIRED:
+
 Please contact our support team with the following information:
 
-┌──────────────────────────────────────────────────────────┐
-│ Tracking ID: {item['id']}
-│ Original Plan ID: {original_plan_id}
-│ Customer Name: {name}
-│ Submission Date: {item.get('created_at')}
-│ Total Retry Attempts: {len(retry_status['attempts'])}
-│
-│ All Attempted Plan IDs:
+   Tracking ID: {item['id']}
+   Original Plan ID: {original_plan_id}
+   Customer Name: {name}
+   Submission Date: {item.get('created_at')}
+   Total Retry Attempts: {len(retry_status['attempts'])}
+   
+   All Attempted Plan IDs:
 {attempt_history}
-└──────────────────────────────────────────────────────────┘
 
-Our team will investigate and contact you within 24 hours.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-IMPORTANT: Please DO NOT resubmit this request. Our team is already 
-reviewing your case and will reach out to you directly.
+⚠️  IMPORTANT: 
+   • DO NOT resubmit this request
+   • Our team is already reviewing your case
+   • We will contact you within 24 hours
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Best regards,
 JushQuant Associates - Automated Plan Setup System
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ESCALATION NOTICE | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 """
         
         try:
@@ -412,7 +462,7 @@ JushQuant Associates - Automated Plan Setup System
             
             self.outlook.send_email(
                 to=recipient,
-                subject=f"URGENT: Plan Setup Failed After {len(retry_status['attempts'])} Attempts",
+                subject=f"🚨 URGENT: Plan Setup Failed After {len(retry_status['attempts'])} Attempts",
                 body=email_body
             )
             logger.info(f"✅ Escalation email sent to {recipient}")
@@ -421,7 +471,7 @@ JushQuant Associates - Automated Plan Setup System
     
     def send_duplicate_submission_email(self, plan_id: str, registry_entry: Dict):
         """
-        NEW: Send informational email when duplicate Plan ID is detected
+        Send informational email when duplicate Plan ID is detected
         
         Args:
             plan_id: The duplicate Plan ID
@@ -432,52 +482,66 @@ JushQuant Associates - Automated Plan Setup System
         # Build attempt history
         attempt_history = ""
         for idx, attempt in enumerate(registry_entry['attempts'], 1):
-            attempt_history += f"Attempt {idx}: Plan ID '{attempt['plan_id']}' → Failed (Plan ID Already Exists)\n"
+            attempt_history += f"   Attempt {idx}: Plan ID '{attempt['plan_id']}' → Failed (Plan ID Already Exists)\n"
         
         email_body = f"""Dear Customer,
 
-We received a new submission for Plan ID: {plan_id}
+We received a NEW submission for Plan ID: {plan_id}
 
-However, our system shows that this Plan ID was already processed and escalated 
+However, our system shows that this Plan ID was already processed and ESCALATED 
 after multiple retry attempts.
 
-PREVIOUS SUBMISSION DETAILS:
-┌──────────────────────────────────────────────────────────┐
-│ Original Plan ID: {plan_id}
-│ First Submitted: {registry_entry.get('first_seen', 'Unknown')}
-│ Status: ESCALATED (after {registry_entry['retry_count']} failed attempts)
-│ Last Updated: {registry_entry.get('last_updated', 'Unknown')}
-│
-│ Previous Retry Attempts:
-│ {attempt_history}
-└──────────────────────────────────────────────────────────┘
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-WHAT THIS MEANS:
-• Your original submission with this Plan ID has already been escalated to our 
-  support team for manual review
-• We are NOT reprocessing this submission to avoid duplicate work
-• Our team is already investigating the issue
+📋 PREVIOUS SUBMISSION DETAILS:
 
-WHAT YOU SHOULD DO:
+   Original Plan ID: {plan_id}
+   First Submitted: {registry_entry.get('first_seen', 'Unknown')}
+   Status: ESCALATED (after {registry_entry['retry_count']} failed attempts)
+   Last Updated: {registry_entry.get('last_updated', 'Unknown')}
+   
+   Previous Retry Attempts:
+{attempt_history}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️  WHAT THIS MEANS:
+
+   • Your original submission with this Plan ID has already been escalated 
+     to our support team for manual review
+   • We are NOT reprocessing this submission to avoid duplicate work
+   • Our team is already investigating the issue
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📞 WHAT YOU SHOULD DO:
+
 1. If you haven't heard from our support team, please contact them directly 
    with reference to Plan ID: {plan_id}
-2. If this is a NEW request (not related to the previous submission), please 
-   use a DIFFERENT Plan ID
+
+2. If this is a NEW request (not related to the previous submission), 
+   please use a DIFFERENT Plan ID
+
 3. Do not resubmit with the same Plan ID
 
-CONTACT SUPPORT:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📞 CONTACT SUPPORT:
 Please reference Plan ID {plan_id} and mention that it was previously escalated.
 
 Thank you for your understanding.
 
 Best regards,
 JushQuant Associates - Automated Plan Setup System
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DUPLICATE SUBMISSION NOTICE | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 """
         
         try:
             self.outlook.send_email(
                 to=requester_email,
-                subject=f"Plan Setup - Duplicate Submission Detected ({plan_id})",
+                subject=f"🚫 Plan Setup - Duplicate Submission Detected ({plan_id})",
                 body=email_body
             )
             logger.info(f"✅ Duplicate submission notification sent to {requester_email}")
@@ -492,30 +556,40 @@ JushQuant Associates - Automated Plan Setup System
         
         email_body = f"""Dear {name},
 
-Your plan setup submission could not be processed due to a data validation error.
+Your plan setup submission could not be processed due to a DATA VALIDATION ERROR.
 
-ISSUE DETECTED:
-┌────────────────────────────────────────────────┐
-│ ⚠️  {exception}                                 │
-└────────────────────────────────────────────────┘
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-YOUR SUBMITTED DATA:
-Name: {data.get('name', 'N/A')}
-Address: {data.get('address', 'N/A')}
-Phone Number: {data.get('phone_number', 'N/A')}
-Plan ID: {item['plan_id']}
+⚠️  ISSUE DETECTED:
+   {exception}
 
-ACTION REQUIRED:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 YOUR SUBMITTED DATA:
+
+   Name: {data.get('name', 'N/A')}
+   Address: {data.get('address', 'N/A')}
+   Phone Number: {data.get('phone_number', 'N/A')}
+   Plan ID: {item['plan_id']}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📞 ACTION REQUIRED:
 Please review your information and resubmit your application with corrected data.
 
-TRACKING INFORMATION:
-Queue Item ID: {item['id']}
-Submission Date: {item.get('created_at')}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 TRACKING INFORMATION:
+   Queue Item ID: {item['id']}
+   Submission Date: {item.get('created_at')}
 
 If you believe this is an error, please contact our support team.
 
 Best regards,
 JushQuant Associates - Automated Plan Setup System
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DATA ERROR NOTICE | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 """
         
         try:
@@ -523,7 +597,7 @@ JushQuant Associates - Automated Plan Setup System
             
             self.outlook.send_email(
                 to=recipient,
-                subject=f"Action Required: Plan Setup Data Error",
+                subject=f"⚠️  Action Required: Plan Setup Data Error",
                 body=email_body
             )
             logger.info(f"✅ Data error email sent to {recipient}")
@@ -593,13 +667,14 @@ app_password = os.getenv('APP_PASSWORD')
 
 def main():
     """Main entry point for Exception Handler"""
-    
+    from utils.outlook_connector import OutlookConnector
     from agents.requestor_interaction_agent import RequestorInteractionAgent
     
-    interaction_agent = RequestorInteractionAgent(None)
+    outlook = OutlookConnector(email_address=email_address, app_password=app_password)
+    interaction_agent = RequestorInteractionAgent(outlook)
     queue = QueueManager(QUEUE_DATABASE)
-
-    handler = BPExceptionHandler(queue, interaction_agent, outlook_connector=None)
+    
+    handler = BPExceptionHandler(queue, interaction_agent, outlook)
     handler.run_continuous(poll_interval=10)
 
 if __name__ == "__main__":
