@@ -1,0 +1,13 @@
+{
+  "timestamp": "2025-12-19T05:36:11.497483",
+  "source_document": "./data/inbox_attachments\\20251219_053600_all_details_with_plan_id.pdf",
+  "extracted_data": {
+    "name": "Vishwajeet",
+    "address": "Delhi",
+    "phone_number": "9182823445",
+    "plan_id": "PLAN001"
+  },
+  "validation_status": "complete",
+  "all_fields_present": true,
+  "plan_id_from_pdf": "PLAN001"
+}

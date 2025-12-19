@@ -240,8 +240,8 @@ Once we receive the complete information, your New Plan Setup will be processed 
 If you have any questions or need assistance, please contact us.
 
 Best regards,
-
-JushQuant Associates - Plan Setup Team
+Suresh Babu G
+Plan Setup Team
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -294,8 +294,8 @@ REQUIRED INFORMATION:
 We apologize for any inconvenience. Once we receive a readable document or the information directly, we will process your New Plan Setup immediately.
 
 Best regards,
-JushQuant Associates - Plan Setup Team
-
+Suresh Babu G
+Plan Setup Team
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 This is an automated message from our Agentic AI Workflow System.
 """
@@ -330,7 +330,8 @@ Your New Plan Setup is now being processed automatically. You will receive confi
 Thank you for providing complete and accurate information!
 
 Best regards,
-JushQuant Associates - Plan Setup Team
+Suresh Babu G
+Plan Setup Team
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 This is an automated confirmation from our Agentic AI Workflow System.

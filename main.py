@@ -41,7 +41,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('email_processing.log', encoding='utf-8'),
+        logging.FileHandler('data/logs/email_processing.log', encoding='utf-8'),
         logging.StreamHandler(sys.stdout)  # Use stdout explicitly
     ]
 )
@@ -107,12 +107,15 @@ def load_configuration():
 
 
 def setup_environment(config: dict):
+    """UPDATED: Consolidated directory setup"""
     directories = [
         config['download_path'],
         config['validated_data_path'],
         config['pending_requests_path'],
         config['export_path'],
-        config['export_logs_path']
+        config['export_logs_path'],
+        './data/logs',  # NEW: Centralized logs
+        './data',  # Ensure data root exists
     ]
     
     for directory in directories:
@@ -125,6 +128,7 @@ def ensure_queue_database_exists():
     """Ensure queue database file and directory exist"""
     import json
     
+    # UPDATED: Use centralized data/queue.json
     queue_path = Path("./data/queue.json")
     
     # Create directory if it doesn't exist
@@ -139,6 +143,24 @@ def ensure_queue_database_exists():
         logger.info(f"✓ Queue database exists: {queue_path}")
     
     return str(queue_path)
+
+
+
+def ensure_retry_registry_exists():
+    """NEW: Ensure retry registry exists"""
+    import json
+    
+    registry_path = Path("./data/retry_registry.json")
+    
+    if not registry_path.exists():
+        registry_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(registry_path, 'w', encoding='utf-8') as f:
+            json.dump({}, f)
+        logger.info(f"✓ Created retry registry: {registry_path}")
+    else:
+        logger.info(f"✓ Retry registry exists: {registry_path}")
+    
+    return str(registry_path)
 
 
 
@@ -171,7 +193,7 @@ def run_continuous(workflow: EmailProcessingWorkflow, exception_handler, check_i
             logger.info(f"⏳ Waiting {check_interval} seconds until next check...")
             time.sleep(check_interval)
     except KeyboardInterrupt:
-        logger.info("⏹ Monitoring stopped by user")
+        logger.info("ℹ️  Monitoring stopped by user")
     except Exception as e:
         logger.error(f"❌ Unexpected error in continuous monitoring: {str(e)}")
         raise
@@ -229,27 +251,31 @@ def main():
             log_path=config['export_logs_path']
         )
 
-        # --- ADDED: Ensure queue database exists BEFORE Agent 5 initialization ---
+        # --- ADDED: Ensure queue database and retry registry exist ---
         logger.info("Ensuring queue database exists...")
         queue_db_path = ensure_queue_database_exists()
+        
+        logger.info("Ensuring retry registry exists...")
+        retry_registry_path = ensure_retry_registry_exists()
 
         # --- MODIFIED: Initialize Agent 5 with explicit path ---
         logger.info("Initializing AGENT 5: BP Exception Handler...")
-        queue_manager = QueueManager(queue_db_path)  # Use explicit path instead of QUEUE_DATABASE
+        queue_manager = QueueManager(queue_db_path)
         exception_handler = BPExceptionHandler(
             queue_manager=queue_manager,
             requestor_interaction_agent=requestor_interaction,
             outlook_connector=outlook_connector
         )
         
-        # Build workflow
+        # Build workflow - UPDATED: Pass exception handler
         logger.info("Building complete Agentic AI Workflow...")
         workflow = EmailProcessingWorkflow(
             email_monitor_agent=email_monitor,
             document_validator_agent=document_validator,
             requestor_interaction_agent=requestor_interaction,
             data_export_agent=data_export,
-            document_parser=document_parser
+            document_parser=document_parser,
+            bp_exception_handler=exception_handler  # NEW: Pass exception handler
         )
         
         # ---------------------------------------------------------
@@ -278,6 +304,7 @@ def main():
         # --- ADDED: Status for Agent 5 ---
         logger.info("  " + format_status(True, "Agent 5: BP Exception Handler"))
         logger.info(f"     Queue Database: {queue_db_path}")
+        logger.info(f"     Retry Registry: {retry_registry_path}")
 
         logger.info("="*80)
 

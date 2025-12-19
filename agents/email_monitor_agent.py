@@ -1,12 +1,14 @@
 import logging
 from typing import Dict, List, Any
 from datetime import datetime
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
 class EmailMonitorAgent:
     """
     Agent responsible for monitoring emails and processing attachments
+    UPDATED: Now checks for duplicate submissions against retry registry
     """
     
     def __init__(self, outlook_connector, monitor_config: Dict[str, Any]):
@@ -24,7 +26,47 @@ class EmailMonitorAgent:
         self.sender = monitor_config.get('sender')
         self.subject = monitor_config.get('subject')
         self.download_path = monitor_config.get('download_path')
+        
+        # NEW: Path to retry registry for duplicate detection
+        self.retry_registry_path = Path(__file__).parent.parent / "data" / "retry_registry.json"
+        
         logger.info(f"Email Monitor Agent initialized - Monitoring sender: {self.sender}, subject: {self.subject}")
+    
+    def _load_retry_registry(self) -> Dict:
+        """NEW: Load retry registry to check for duplicates"""
+        import json
+        try:
+            if self.retry_registry_path.exists():
+                with open(self.retry_registry_path, 'r') as f:
+                    return json.load(f)
+            return {}
+        except Exception as e:
+            logger.error(f"Error loading retry registry: {str(e)}")
+            return {}
+    
+    def _check_duplicate_plan_id(self, plan_id: str, requester_email: str) -> bool:
+        """
+        NEW: Check if Plan ID was already escalated
+        
+        Args:
+            plan_id: Plan ID extracted from document
+            requester_email: Email of requestor
+            
+        Returns:
+            True if duplicate and already escalated
+        """
+        registry = self._load_retry_registry()
+        
+        if plan_id in registry:
+            entry = registry[plan_id]
+            if entry.get('status') == 'ESCALATED':
+                logger.warning(f"🚫 DUPLICATE PLAN ID DETECTED: {plan_id}")
+                logger.warning(f"   Status: ESCALATED (already processed)")
+                logger.warning(f"   Retry Count: {entry.get('retry_count', 0)}")
+                logger.warning(f"   First Seen: {entry.get('first_seen', 'Unknown')}")
+                return True
+        
+        return False
     
     def check_emails(self) -> Dict[str, Any]:
         """
@@ -40,6 +82,7 @@ class EmailMonitorAgent:
             'emails_processed': 0,
             'attachments_downloaded': 0,
             'replies_sent': 0,
+            'duplicates_detected': 0,  # NEW: Track duplicates
             'errors': []
         }
         
@@ -65,6 +108,10 @@ class EmailMonitorAgent:
                     results['errors'].append(error_msg)
             
             logger.info(f"Email check complete. Processed {results['emails_processed']} emails")
+            
+            # NEW: Log duplicate detections
+            if results['duplicates_detected'] > 0:
+                logger.info(f"   Duplicates detected and handled: {results['duplicates_detected']}")
             
         except Exception as e:
             error_msg = f"Error during email check: {str(e)}"

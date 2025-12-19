@@ -1,0 +1,26 @@
+{
+  "PLAN001": {
+    "retry_count": 2,
+    "status": "ESCALATED",
+    "attempts": [
+      {
+        "plan_id": "QMFF3J5",
+        "timestamp": "2025-12-19T06:17:20.876418",
+        "retry_number": 1
+      },
+      {
+        "plan_id": "BBA4N2Y",
+        "timestamp": "2025-12-19T06:17:33.910773",
+        "retry_number": 2
+      },
+      {
+        "plan_id": "BBA4N2Y",
+        "timestamp": "2025-12-19T06:17:41.628520",
+        "retry_number": 2
+      }
+    ],
+    "first_seen": "2025-12-19T06:17:20.876418",
+    "requester_email": "prajush01@gmail.com",
+    "last_updated": "2025-12-19T06:17:41.628520"
+  }
+}

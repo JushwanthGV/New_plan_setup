@@ -1,0 +1,13 @@
+{
+  "timestamp": "2025-12-19T06:17:06.914449",
+  "source_document": "./data/inbox_attachments\\20251219_061651_Same_plan_id_conflict_test.pdf",
+  "extracted_data": {
+    "name": "Jushwanth",
+    "address": "Banglore",
+    "phone_number": "918 768943985",
+    "plan_id": "PLAN001"
+  },
+  "validation_status": "complete",
+  "all_fields_present": true,
+  "plan_id_from_pdf": "PLAN001"
+}

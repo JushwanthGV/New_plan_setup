@@ -2,6 +2,7 @@ import os
 from langgraph.graph import StateGraph, END
 from typing import TypedDict, Any, List
 import logging
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +18,7 @@ class EmailWorkflowState(TypedDict):
     blueprism_failed_count: int
     responses_sent: List[dict]
     jsons_saved: List[str]
+    duplicates_handled: List[dict]  # NEW: Track duplicate submissions
     status: str
     error: str | None
     current_email: dict | None
@@ -25,18 +27,23 @@ class EmailProcessingWorkflow:
     """
     Complete LangGraph workflow matching the Agentic AI Workflow diagram
     Includes: Agent 1 (Monitor), Agent 2 (Validate), Agent 3 (Interact), Agent 4 (Export)
+    UPDATED: Now checks for duplicate Plan IDs before processing
     """
 
     def __init__(self, email_monitor_agent, document_validator_agent, 
                  requestor_interaction_agent, data_export_agent, 
-                 document_parser):
+                 document_parser, bp_exception_handler=None):
 
         self.email_agent = email_monitor_agent
         self.validator_agent = document_validator_agent
         self.interaction_agent = requestor_interaction_agent
         self.export_agent = data_export_agent
         self.parser = document_parser
+        self.exception_handler = bp_exception_handler  # NEW: Optional exception handler
         self.graph = self._build_graph()
+        
+        # NEW: Path to retry registry
+        self.retry_registry_path = Path(__file__).parent.parent / "data" / "retry_registry.json"
 
     def _build_graph(self):
         """Build LangGraph state graph"""
@@ -58,8 +65,20 @@ class EmailProcessingWorkflow:
 
         return workflow.compile()
 
+    def _load_retry_registry(self) -> dict:
+        """NEW: Load retry registry"""
+        import json
+        try:
+            if self.retry_registry_path.exists():
+                with open(self.retry_registry_path, 'r') as f:
+                    return json.load(f)
+            return {}
+        except Exception as e:
+            logger.error(f"Error loading retry registry: {str(e)}")
+            return {}
+
     # -------------------------------------------------------------------------
-    # AGENT 1 — EMAIL MONITORING
+    # AGENT 1 – EMAIL MONITORING
     # -------------------------------------------------------------------------
     def _agent1_monitor_emails(self, state: EmailWorkflowState) -> EmailWorkflowState:
         logger.info("="*80)
@@ -75,13 +94,14 @@ class EmailProcessingWorkflow:
 
             state['emails_found'] = []
             state['attachments_downloaded'] = []
+            state['duplicates_handled'] = []  # NEW: Initialize duplicates list
 
             if not emails:
-                logger.info("✗ No new plan setup emails found")
+                logger.info("❌ No new plan setup emails found")
                 state['status'] = 'no_emails'
                 return state
 
-            logger.info(f"✓ Found {len(emails)} new plan setup email(s)")
+            logger.info(f"✅ Found {len(emails)} new plan setup email(s)")
 
             for email_msg in emails:
                 email_info = self.email_agent.outlook.get_email_info(email_msg)
@@ -101,24 +121,24 @@ class EmailProcessingWorkflow:
                     })
                     state['attachments_downloaded'].extend(downloaded)
 
-                    logger.info(f"✓ Downloaded {len(downloaded)} document(s) from {email_info['from']}")
+                    logger.info(f"✅ Downloaded {len(downloaded)} document(s) from {email_info['from']}")
 
                 else:
                     reply_body = self.email_agent._generate_no_attachment_reply(email_msg)
                     self.email_agent.outlook.reply_to_email(email_msg, reply_body, mark_as_read=True)
-                    logger.info(f"✗ No attachments — sent notification to {email_info['from']}")
+                    logger.info(f"❌ No attachments – sent notification to {email_info['from']}")
 
             state['status'] = 'success' if state['attachments_downloaded'] else 'no_attachments'
 
         except Exception as e:
-            logger.error(f"✗ Error in Agent 1 (Email Monitoring): {str(e)}")
+            logger.error(f"❌ Error in Agent 1 (Email Monitoring): {str(e)}")
             state['status'] = 'error'
             state['error'] = str(e)
 
         return state
 
     # -------------------------------------------------------------------------
-    # AGENT 2 — DOCUMENT VALIDATION
+    # AGENT 2 – DOCUMENT VALIDATION (WITH DUPLICATE DETECTION)
     # -------------------------------------------------------------------------
     def _agent2_validate_documents(self, state: EmailWorkflowState) -> EmailWorkflowState:
         logger.info("="*80)
@@ -126,19 +146,22 @@ class EmailProcessingWorkflow:
         logger.info("="*80)
 
         if not state.get('attachments_downloaded'):
-            logger.info("✗ No attachments to validate")
+            logger.info("❌ No attachments to validate")
             return state
 
         state['validation_results'] = []
 
         try:
+            # NEW: Load retry registry once at the start
+            retry_registry = self._load_retry_registry()
+            
             for attachment_path in state['attachments_downloaded']:
                 logger.info(f"Processing: {attachment_path}")
 
                 document_text = self.parser.parse_document(attachment_path)
 
                 if not document_text:
-                    logger.warning(f"⚠ Could not extract text from: {attachment_path}")
+                    logger.warning(f"⚠️  Could not extract text from: {attachment_path}")
                     state['validation_results'].append({
                         'all_fields_present': False,
                         'extracted_data': {},
@@ -149,29 +172,70 @@ class EmailProcessingWorkflow:
                     })
                     continue
 
-                logger.info(f"✓ Extracted {len(document_text)} characters of text")
+                logger.info(f"✅ Extracted {len(document_text)} characters of text")
 
                 validation_result = self.validator_agent.validate_and_extract(
                     document_text,
                     attachment_path
                 )
 
+                # NEW: Check for duplicate Plan ID AFTER validation
+                if validation_result['all_fields_present']:
+                    plan_id = validation_result['extracted_data'].get('plan_id', '')
+                    
+                    # Get requester email from state
+                    requester_email = None
+                    for email_data in state.get('emails_found', []):
+                        if attachment_path in email_data.get('attachments', []):
+                            requester_email = email_data['sender']
+                            break
+                    
+                    # Check if Plan ID already escalated
+                    if plan_id and plan_id in retry_registry:
+                        entry = retry_registry[plan_id]
+                        if entry.get('status') == 'ESCALATED':
+                            logger.warning(f"🚫 DUPLICATE SUBMISSION: Plan ID {plan_id} already escalated")
+                            
+                            # Mark as duplicate in validation result
+                            validation_result['is_duplicate'] = True
+                            validation_result['duplicate_info'] = entry
+                            
+                            # Track duplicate
+                            state['duplicates_handled'].append({
+                                'plan_id': plan_id,
+                                'filename': attachment_path,
+                                'requester_email': requester_email,
+                                'registry_entry': entry
+                            })
+                            
+                            # Send duplicate notification email
+                            if self.exception_handler:
+                                self.exception_handler.send_duplicate_submission_email(plan_id, entry)
+                            
+                            logger.info(f"📧 Sent duplicate submission notification")
+                        else:
+                            validation_result['is_duplicate'] = False
+                    else:
+                        validation_result['is_duplicate'] = False
+
                 state['validation_results'].append(validation_result)
 
-                if validation_result['all_fields_present']:
-                    logger.info(f"✓ Validation PASSED: {attachment_path}")
+                if validation_result['all_fields_present'] and not validation_result.get('is_duplicate'):
+                    logger.info(f"✅ Validation PASSED: {attachment_path}")
+                elif validation_result.get('is_duplicate'):
+                    logger.info(f"🚫 Validation SKIPPED (duplicate): {attachment_path}")
                 else:
-                    logger.warning(f"✗ Validation FAILED: {attachment_path}")
+                    logger.warning(f"❌ Validation FAILED: {attachment_path}")
                     logger.warning(f"   Missing fields: {', '.join(validation_result['missing_fields'])}")
 
         except Exception as e:
-            logger.error(f"✗ Error in Agent 2 (Document Validation): {str(e)}")
+            logger.error(f"❌ Error in Agent 2 (Document Validation): {str(e)}")
             state['error'] = str(e)
 
         return state
 
     # -------------------------------------------------------------------------
-    # AGENT 3 — REQUESTOR INTERACTION
+    # AGENT 3 – REQUESTOR INTERACTION
     # -------------------------------------------------------------------------
     def _agent3_interact_requestor(self, state: EmailWorkflowState) -> EmailWorkflowState:
         logger.info("="*80)
@@ -179,7 +243,7 @@ class EmailProcessingWorkflow:
         logger.info("="*80)
 
         if not state.get('validation_results'):
-            logger.info("✗ No validation results to handle")
+            logger.info("❌ No validation results to handle")
             return state
 
         state['interaction_results'] = []
@@ -198,6 +262,22 @@ class EmailProcessingWorkflow:
                         None
                     )
                     if not validation:
+                        continue
+
+                    # NEW: Skip processing if duplicate
+                    if validation.get('is_duplicate'):
+                        logger.info(f"⏭️  Skipping duplicate: {attachment_path}")
+                        
+                        # Delete duplicate attachment
+                        try:
+                            if os.path.exists(attachment_path):
+                                os.remove(attachment_path)
+                                logger.info(f"🗑️  Deleted duplicate document: {attachment_path}")
+                        except Exception as del_err:
+                            logger.error(f"⚠️  Failed to delete duplicate: {str(del_err)}")
+                        
+                        # Mark email as read
+                        self.email_agent.outlook.mark_as_read(email_message)
                         continue
 
                     interaction_result = self.interaction_agent.handle_validation_result(
@@ -220,31 +300,36 @@ class EmailProcessingWorkflow:
                         json_path = self.validator_agent.save_validated_data(validation)
                         if json_path:
                             state['jsons_saved'].append(json_path)
-                            logger.info(f"✓ Saved validated data: {json_path}")
+                            logger.info(f"✅ Saved validated data: {json_path}")
 
                     else:
                         try:
                             if os.path.exists(attachment_path):
                                 os.remove(attachment_path)
-                                logger.info(f"🗑 Deleted invalid document: {attachment_path}")
+                                logger.info(f"🗑️  Deleted invalid document: {attachment_path}")
                             else:
-                                logger.warning(f"⚠ File not found for deletion: {attachment_path}")
+                                logger.warning(f"⚠️  File not found for deletion: {attachment_path}")
                         except Exception as del_err:
-                            logger.error(f"⚠ Failed to delete invalid document: {str(del_err)}")
+                            logger.error(f"⚠️  Failed to delete invalid document: {str(del_err)}")
 
                     self.email_agent.outlook.mark_as_read(email_message)
 
-            logger.info(f"✓ Processed {len(state['interaction_results'])} interaction(s)")
-            logger.info(f"✓ Sent {len(state['responses_sent'])} notification(s)")
-            logger.info(f"✓ Created {len(state['pending_requests_created'])} pending request(s)")
+            logger.info(f"✅ Processed {len(state['interaction_results'])} interaction(s)")
+            logger.info(f"✅ Sent {len(state['responses_sent'])} notification(s)")
+            logger.info(f"✅ Created {len(state['pending_requests_created'])} pending request(s)")
+            
+            # NEW: Log duplicates
+            if state.get('duplicates_handled'):
+                logger.info(f"🚫 Handled {len(state['duplicates_handled'])} duplicate submission(s)")
 
         except Exception as e:
-            logger.error(f"✗ Error in Agent 3 (Requestor Interaction): {str(e)}")
+            logger.error(f"❌ Error in Agent 3 (Requestor Interaction): {str(e)}")
             state['error'] = str(e)
 
         return state
+    
     # -------------------------------------------------------------------------
-    # AGENT 4 — DATA EXPORT
+    # AGENT 4 – DATA EXPORT
     # -------------------------------------------------------------------------
     def _agent4_export_data(self, state: EmailWorkflowState) -> EmailWorkflowState:
         logger.info("="*80)
@@ -252,32 +337,43 @@ class EmailProcessingWorkflow:
         logger.info("="*80)
 
         if not state.get('validation_results'):
-            logger.info("✗ No validation results to export")
+            logger.info("❌ No validation results to export")
             state['blueprism_submissions'] = []
             state['blueprism_success_count'] = 0
             state['blueprism_failed_count'] = 0
             return state
         
         try:
-            export_results = self.export_agent.process_validated_data(
-                state['validation_results']
-            )
+            # NEW: Filter out duplicate submissions before export
+            valid_results = [
+                v for v in state['validation_results'] 
+                if not v.get('is_duplicate', False)
+            ]
+            
+            if not valid_results:
+                logger.info("⊘ No non-duplicate documents to export")
+                state['blueprism_submissions'] = []
+                state['blueprism_success_count'] = 0
+                state['blueprism_failed_count'] = 0
+                return state
+            
+            export_results = self.export_agent.process_validated_data(valid_results)
 
             state['blueprism_submissions'] = export_results.get('exports', [])
             state['blueprism_success_count'] = export_results.get('successful_exports', 0)
             state['blueprism_failed_count'] = export_results.get('failed_exports', 0)
 
             if state['blueprism_success_count'] > 0:
-                logger.info(f"✓ Successfully exported {state['blueprism_success_count']} file(s) to network folder")
+                logger.info(f"✅ Successfully exported {state['blueprism_success_count']} file(s) to network folder")
 
             if state['blueprism_failed_count'] > 0:
-                logger.warning(f"⚠ Failed to export {state['blueprism_failed_count']} file(s)")
+                logger.warning(f"⚠️  Failed to export {state['blueprism_failed_count']} file(s)")
 
             logger.info("\nExport Details:")
             logger.info("-" * 80)
 
             for export in state['blueprism_submissions']:
-                status_icon = "✓" if export.get('success') else "✗"
+                status_icon = "✅" if export.get('success') else "❌"
                 logger.info(f"{status_icon} {export.get('filename')}")
 
                 if export.get('export_filepath'):
@@ -287,7 +383,7 @@ class EmailProcessingWorkflow:
                     logger.info(f"   Error: {export.get('error')}")
 
         except Exception as e:
-            logger.error(f"✗ Error in Agent 4 (Data Export): {str(e)}")
+            logger.error(f"❌ Error in Agent 4 (Data Export): {str(e)}")
             state['error'] = str(e)
             state['blueprism_submissions'] = []
             state['blueprism_success_count'] = 0
@@ -311,8 +407,11 @@ class EmailProcessingWorkflow:
         logger.info(f"   • Documents validated: {len(state.get('validation_results', []))}")
         valid_count = sum(1 for v in state.get('validation_results', []) if v.get('all_fields_present'))
         invalid_count = len(state.get('validation_results', [])) - valid_count
+        duplicate_count = len(state.get('duplicates_handled', []))
         logger.info(f"   • Valid documents: {valid_count}")
         logger.info(f"   • Invalid/incomplete documents: {invalid_count}")
+        if duplicate_count > 0:
+            logger.info(f"   • Duplicate submissions detected: {duplicate_count}")
 
         logger.info("\n💬 AGENT 3 - Requestor Interaction:")
         logger.info(f"   • Interactions processed: {len(state.get('interaction_results', []))}")
@@ -329,7 +428,7 @@ class EmailProcessingWorkflow:
             logger.info(f"   • Export path: {self.export_agent.exporter.export_path}")
 
         if state.get('error'):
-            logger.error(f"\n✗ Errors encountered: {state['error']}")
+            logger.error(f"\n❌ Errors encountered: {state['error']}")
 
         logger.info("="*80)
         return state
@@ -353,6 +452,7 @@ class EmailProcessingWorkflow:
             'blueprism_failed_count': 0,
             'responses_sent': [],
             'jsons_saved': [],
+            'duplicates_handled': [],  # NEW
             'status': 'pending',
             'error': None,
             'current_email': None

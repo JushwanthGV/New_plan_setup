@@ -1,5 +1,6 @@
 """
 Configuration for Mock Blue Prism Queue System
+UPDATED: Consolidated paths, single source of truth
 """
 import os
 import pathlib
@@ -7,7 +8,7 @@ import pathlib
 # Base directory for the project
 BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
 
-# Queue Settings - CORRECT PATH (stores in data/queue.json)
+# Queue Settings - CONSOLIDATED: Only one queue.json location
 QUEUE_DATABASE = BASE_DIR / "data" / "queue.json"
 VDI_NAME = "VDI_Server_01"
 MAX_RETRY_ATTEMPTS = 2  # Total 2 attempts (original + 1 retry)
@@ -33,4 +34,3 @@ EXCEPTION_DATA_ERROR = "Invalid Data Format"
 
 # Email Settings (inherited from main system)
 EMAIL_FROM_AGENT = True  # Agent 5 sends emails via RequestorInteractionAgent
-
